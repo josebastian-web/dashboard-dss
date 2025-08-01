@@ -12,27 +12,34 @@ import '@mdi/font/css/materialdesignicons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import 'vuetify/styles'
 
+// Tema claro
 const lightDashboardTheme = {
-  dark: false, // ¡Tema claro!
+  dark: false,
   colors: {
-    // Colores base de fondo y superficie
-    'background': '#F5F5F5',
-    'surface': '#FFFFFF',
-
-    // Colores de marca
     'primary': '#2196F3',
-    'secondary': '#FF9800',
-    'accent': '#9C27B0',
-
-    // Colores de estado
-    'success': '#4CAF50',
-    'info': '#2196F3',
-    'warning': '#FFC107',
+    'secondary': '#00ACC1',
+    'accent': '#FFC107',
+    // Estado / Semánticos
     'error': '#F44336',
-
-    'on-background': 'rgba(0, 0, 0, 0.87)',
-    'on-surface': 'rgba(0, 0, 0, 0.87)',
+    'info': '#2196F3',
+    'success': '#4CAF50',
+    'warning': '#FF9800',
+    // Neutros / Base de UI (para fondos, superficies, textos)
+    'surface': '#FFFFFF',
+    'background': '#F5F7FA',
+    // Colores de texto (Vuetify los usa para 'on-primary', 'on-surface' etc.)
     'on-primary': '#FFFFFF',
+    'on-secondary': '#FFFFFF',
+    'on-accent': '#212121',
+    'on-error': '#FFFFFF',
+    'on-info': '#FFFFFF',
+    'on-success': '#FFFFFF',
+    'on-warning': '#212121',
+
+    // Colores de texto específicos si necesitas control fino
+    'text-high-emphasis': '#212121',
+    'text-medium-emphasis': '#616161',
+    'text-disabled': 'rgba(0, 0, 0, 0.38)',
   },
 }
 

@@ -8,3 +8,121 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+
+$custom-shadow-color-rgba: rgba(50, 50, 50, 0.07);
+
+@use 'vuetify/settings' with (
+  $body-font-family: 'Inter',
+  $heading-font-family: 'Inter',
+
+  $border-radius-root: 8px,
+  $card-elevation: 1,
+
+  // --- Breakpoints ---
+  $grid-breakpoints: (
+    'xs': 0,
+    'sm': 576px,
+    'md': 768px,
+    'lg': 992px,
+    'xl': 1200px,
+    'xxl': 1400px,
+  )
+);
+
+.v-theme--lightDashboardTheme {
+  --v-theme-shadow: #{$custom-shadow-color-rgba};
+
+  &.elevation-0 {
+    box-shadow: none !important;
+  }
+  &.elevation-1 {
+    box-shadow: 0px 2px 1px -1px #{$custom-shadow-color-rgba},
+                0px 1px 1px 0px #{$custom-shadow-color-rgba},
+                0px 1px 3px 0px #{$custom-shadow-color-rgba} !important;
+  }
+  &.elevation-2 {
+    box-shadow: 0px 3px 1px -2px #{$custom-shadow-color-rgba},
+                0px 2px 2px 0px #{$custom-shadow-color-rgba},
+                0px 1px 5px 0px #{$custom-shadow-color-rgba} !important;
+  }
+}
+
+// Estas siguen siendo cruciales.
+html, body, #app {
+  font-family: 'Inter', sans-serif !important;
+  line-height: 1.6;
+  // Usaremos el color definido en vuetify.ts para el background, pero puedes poner un fallback aquí:
+  background-color: #F5F7FA;
+}
+
+// Sobrescribe las variables CSS de Vuetify para la familia de fuente y los pesos.
+// Esto sigue siendo necesario para que Inter funcione correctamente en Vuetify 3.
+:root {
+  --v-font-family: 'Inter', sans-serif;
+  --v-font-weight-light: 300;
+  --v-font-weight-regular: 400;
+  --v-font-weight-medium: 500;
+  --v-font-weight-bold: 700;
+  --v-font-weight-black: 900;
+  font-size: 16px;
+}
+
+
+.v-app-bar.app-bar-scroll-transition {
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  box-shadow: none !important;
+
+  &:not(.v-toolbar--flat) {
+    background-color: #FFFFFF !important;
+    margin-top: 0px !important;
+    box-shadow: 0px 2px 4px -1px rgba(50, 50, 50, 0.15),
+                0px 4px 5px 0px rgba(50, 50, 50, 0.15),
+                0px 1px 10px 0px rgba(50, 50, 50, 0.15) !important;
+  }
+}
+
+.v-application {
+  font-family: 'Inter', sans-serif;
+}
+
+.v-card-title {
+  overflow-wrap: normal;
+  text-overflow: initial;
+  white-space: normal;
+}
+
+/* Altura por defecto para pantallas muy grandes (mayor que 1200px) */
+/* Esto cubre monitores de escritorio grandes o múltiples monitores. */
+.chart {
+  width: 100%;
+  height: 550px;
+}
+
+/* COMPUTADORES / LAPTOPS (Escritorio mediano y grande: ~992px a 1200px) */
+@media (max-width: 1200px) {
+  .chart {
+    height: 480px;
+  }
+}
+
+/* TABLETS (Mediano: ~768px a 991px) */
+@media (max-width: 991px) {
+  .chart {
+    height: 400px;
+  }
+}
+
+/* CELULARES / MÓVILES (Pequeño: hasta 767px) */
+@media (max-width: 767px) {
+  .chart {
+    height: 320px;
+  }
+}
+
+/* CELULARES MUY PEQUEÑOS (Extra pequeño: hasta ~480px o 375px si es necesario) */
+/* Solo si tus usuarios usan dispositivos muy pequeños y necesitas optimizar aún más */
+@media (max-width: 480px) {
+  .chart {
+    height: 280px;
+  }
+}

@@ -4,9 +4,9 @@
       <template #prepend>
         <v-list-item
           lines="two"
-          prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
-          subtitle="Logged in"
-          title="Jane Smith"
+          prepend-avatar="https://api.dicebear.com/9.x/icons/svg?seed=Mackenzie"
+          subtitle="Conectado"
+          title="José Lagos"
         />
       </template>
       <v-divider />
@@ -23,7 +23,15 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-app-bar app dark scroll-behavior="elevate">
+      <v-app-bar
+        app
+        class="app-bar-scroll-transition mt-4 px-4"
+        color="background"
+        elevation="0"
+        rounded
+        scroll-behavior="elevate"
+        scroll-threshold="100"
+      >
         <v-app-bar-nav-icon @click="drawer = !drawer" />
         <v-spacer />
         <v-btn icon>
@@ -34,41 +42,26 @@
         <router-view />
       </v-container>
     </v-main>
-
-    <v-footer app class="text-center py-3" color="grey-lighten-3">
-      <v-container>
-        <span class="text-caption">
-          &copy; {{ new Date().getFullYear() }} Mi Dashboard. Todos los derechos reservados.
-        </span>
-      </v-container>
-    </v-footer>
   </v-app>
 </template>
 
 <script lang="ts" setup>
   import { ref } from 'vue'
-  /* import { useProductStore } from '@/stores/project'
 
-  const authStore = useProductStore() */
   const routesProject = [
     {
-      text: 'Inicio',
-      icon: 'far fa-house',
-      link: '/',
-    },
-    {
-      text: 'Ingresados vs Aprobados',
-      icon: 'far fa-paper-plane',
+      text: 'Estado de Proyectos',
+      icon: 'fa-regular fa-folder-open',
       link: '/admitted-approved',
     },
     {
-      text: 'Inversion año/tipo',
+      text: 'Inversión por Proyecto',
       icon: 'far fa-chart-bar',
       link: '/investment',
     },
     {
-      text: 'Diferencia Fecha/Fecha Resolución',
-      icon: 'fa-regular fa-calendar',
+      text: 'Reporte de Tramitación',
+      icon: 'fa-regular fa-file-lines',
       link: '/date-diff',
     },
   ]

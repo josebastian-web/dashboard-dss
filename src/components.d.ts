@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdmitApprovBarChart: typeof import('./components/AdmitApprovBarChart.vue')['default']
     AverageProcessTimeChart: typeof import('./components/AverageProcessTimeChart.vue')['default']
-    BarChart: typeof import('./components/InvestmentBarChart.vue')['default']
     InvestmentBarChart: typeof import('./components/InvestmentBarChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

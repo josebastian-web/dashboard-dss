@@ -8,6 +8,11 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
 
+routes.unshift({
+  path: '/',
+  redirect: '/admitted-approved',
+})
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,

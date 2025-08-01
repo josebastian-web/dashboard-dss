@@ -1,73 +1,250 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row>
-      <v-col cols="12" md="12">
-        <h1 class="text-h4 mb-4">Diferencia de tiempo entre fecha y fecha resolucion por año y tipo</h1>
-      </v-col>
-      <v-col cols="12" md="6" sm="6">
-        <v-card class="pa-4 text-center" elevation="2">
-          <v-icon color="primary" size="64">fa-solid fa-file-lines</v-icon>
-          <div class="text-h5 mt-2">Días Promedio de Tramitación (General)</div>
-          <div class="text-h4 font-weight-bold">$12,450</div>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6" sm="6">
-        <v-card class="pa-4 text-center" elevation="2">
-          <v-icon color="success" size="64">fa-solid fa-circle-check</v-icon>
-          <div class="text-h5 mt-2">Proyecto con Tramitación Más Larga / Corta</div>
-          <div class="text-h4 font-weight-bold">150</div>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-container class="pa-4" fluid>
+    <h1 class="text-h4 mb-4 text-center text-md-start">
+      Tiempo de Tramitación por Año y Tipo
+    </h1>
 
-    <v-row class="mt-4">
-      <v-col cols="12" md="12">
-        <AverageProcessTimeChart :is-loading="isLoading" :raw-data="allProjects" />
-      </v-col>
-      <v-col cols="12">
-        <v-card class="pa-4" elevation="2">
-          <v-card-title class="text-h5">Últimos Pedidos</v-card-title>
-          <v-card-text>
-            <v-table>
-              <thead>
-                <tr>
-                  <th>ID Proyecto</th>
-                  <th>Año</th>
-                  <th>Tipo</th>
-                  <th>Fecha Ingreso</th>
-                  <th>Fecha Resolución</th>
-                  <th>Días de Tramitación</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>#P001</td>
-                  <td>#P001</td>
-                  <td>#P001</td>
-                  <td>#P001</td>
-                  <td>#P001</td>
-                  <td>#P001</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <v-card class="pa-4 mb-6" elevation="1">
+      <v-card-title class="text-h6"> Seleccionar Región </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="4">
+            <v-select
+              v-model="dateDiffStore.selectedRegion"
+              density="compact"
+              :disabled="mainStore.isLoading || mainStore.error !== null"
+              hide-details
+              :items="mainStore.availableRegions"
+              label=""
+              :loading="mainStore.isLoading"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+
+    <div v-if="mainStore.isLoading" class="text-center py-5">
+      <v-progress-circular color="primary" indeterminate />
+      <p class="mt-2">Cargando datos de proyectos...</p>
+    </div>
+    <div v-else-if="mainStore.error" class="text-center py-5">
+      <v-icon color="error" size="48">fa-solid fa-circle-exclamation</v-icon>
+      <p class="mt-2 text-error">{{ mainStore.error }}</p>
+    </div>
+    <div
+      v-else-if="dateDiffStore.chartData.years.length === 0"
+      class="text-center py-5"
+    >
+      <v-icon color="grey-lighten-1" size="48">fa-solid fa-chart-simple</v-icon>
+      <p class="mt-2 text-medium-emphasis">
+        No hay datos de tiempo de tramitación disponibles para la región
+        seleccionada.
+      </p>
+    </div>
+    <div v-else>
+      <v-row class="mb-6">
+        <v-col cols="12" md="4" sm="6">
+          <v-card
+            class="d-flex pa-4 text-center flex-column justify-center align-center"
+            elevation="1"
+            min-height="169"
+          >
+            <v-icon color="blue-grey" size="30">fa-solid fa-hourglass</v-icon>
+            <div class="text-subtitle-1 text-medium-emphasis">
+              Promedio General de Tramitación
+            </div>
+            <div class="text-h4 text-primary mt-2">
+              {{ dateDiffStore.overallAverageProcessingTime }} días
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4" sm="6">
+          <v-card
+            class="d-flex pa-4 text-center flex-column justify-center align-center"
+            elevation="1"
+            min-height="170"
+          >
+            <v-icon color="red" size="30">fa-solid fa-stopwatch</v-icon>
+            <div class="text-subtitle-1 text-medium-emphasis">
+              Tramitación Más Larga
+            </div>
+            <div
+              v-if="dateDiffStore.projectWithLongestProcessingTime"
+              class="text-h4 text-primary mt-2"
+            >
+              {{ dateDiffStore.projectWithLongestProcessingTime.days }}
+              días
+              <div class="text-subtitle-1 mt-1">
+                ({{ dateDiffStore.projectWithLongestProcessingTime.project }})
+              </div>
+            </div>
+            <div v-else class="text-h6 mt-2">N/A</div>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4" sm="12">
+          <v-card
+            class="d-flex pa-4 text-center flex-column justify-center align-center"
+            elevation="1"
+            min-height="170"
+          >
+            <v-icon color="green" size="30">fa-solid fa-bolt</v-icon>
+            <div class="text-subtitle-1 text-medium-emphasis">
+              Tramitación Más Corta
+            </div>
+            <div
+              v-if="dateDiffStore.projectWithShortestProcessingTime"
+              class="text-h4 text-primary mt-2"
+            >
+              {{ dateDiffStore.projectWithShortestProcessingTime.days }}
+              días
+              <div class="text-subtitle-1 mt-1">
+                ({{ dateDiffStore.projectWithShortestProcessingTime.project }})
+              </div>
+            </div>
+            <div v-else class="text-h6 mt-2">N/A</div>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row class="mb-6">
+        <v-col cols="12">
+          <v-card class="pa-4" elevation="1">
+            <v-card-title class="text-h5 text-center text-md-start">
+              Promedio de Días de Tramitación por Año y Tipo
+            </v-card-title>
+            <v-card-text>
+              <v-chart autoresize class="chart" :option="chartOptions" />
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <v-card class="pa-4" elevation="1">
+            <v-card-title class="text-h5 text-center text-md-start">
+              Detalles del Tiempo de Tramitación
+            </v-card-title>
+            <v-card-text>
+              <v-data-table
+                class="elevation-0"
+                :headers="tableHeaders"
+                hide-default-footer
+                item-value="id"
+                :items="dateDiffStore.processingTimeTableData"
+              >
+                <template #item.processing_days="{ item }">
+                  {{ item.processing_days }} días
+                </template>
+                <template #no-data>
+                  No hay datos para mostrar en la tabla con los filtros
+                  actuales.
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
-<script lang="ts" setup>
-  import { storeToRefs } from 'pinia'
-  import { onMounted } from 'vue'
-  import AverageProcessTimeChart from '@/components/AverageProcessTimeChart.vue'
-  import { useProjectStore } from '@/stores/project'
+<script setup lang="ts">
+  import { computed, onMounted } from 'vue'
+  import { useMainStore } from '@/stores/main'
+  import { useDateDiffStore } from '@/stores/pages/dateDiff'
 
-  const projectStore = useProjectStore()
-  const { allProjects, isLoading } = storeToRefs(projectStore)
-  const { fetchAllProjects } = projectStore
+  const mainStore = useMainStore()
+  const dateDiffStore = useDateDiffStore()
 
   onMounted(() => {
-    fetchAllProjects()
+    mainStore.fetchAllProjects()
   })
+
+  const chartOptions = computed(() => {
+    const chartData = dateDiffStore.chartData
+    if (chartData.years.length === 0) {
+      return {}
+    }
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: (params: any[]) => {
+          let tooltipContent = `<div style="font-weight: bold;">${params[0].name}</div>`
+          for (const item of params) {
+            tooltipContent += `${item.marker} ${
+              item.seriesName
+            }: <strong>${item.value.toLocaleString()} días</strong><br/>`
+          }
+          return tooltipContent
+        },
+      },
+      legend: {
+        data: ['Promedio Días DIA', 'Promedio Días EIA'],
+        bottom: 0,
+        textStyle: {
+          fontSize: 16,
+          fontFamily: 'Inter',
+        },
+      },
+      grid: { left: '3%', right: '4%', bottom: '20%', containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: chartData.years,
+        axisLabel: {
+          interval: 0,
+          rotate: 30,
+          fontSize: 14,
+          fontFamily: 'Inter',
+        },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Días de Tramitación',
+        axisLabel: {
+          formatter: '{value} días',
+          fontSize: 14,
+          fontFamily: 'Inter',
+        },
+      },
+      series: [
+        {
+          name: 'Promedio Días DIA',
+          type: 'bar',
+          data: chartData.diaAvgDays,
+          emphasis: { focus: 'series' },
+          itemStyle: { color: '#E91E63' },
+        },
+        {
+          name: 'Promedio Días EIA',
+          type: 'bar',
+          data: chartData.eiaAvgDays,
+          emphasis: { focus: 'series' },
+          itemStyle: { color: '#9C27B0' },
+        },
+      ],
+      textStyle: {
+        fontSize: 14,
+        fontFamily: 'Inter',
+      },
+    }
+  })
+
+  const tableHeaders = [
+    { title: 'ID Proyecto', key: 'id', align: 'start' as const },
+    { title: 'Nombre Proyecto', key: 'name', align: 'start' as const },
+    { title: 'Año', key: 'year', align: 'start' as const },
+    { title: 'Tipo', key: 'type', align: 'start' as const },
+    { title: 'Fecha Ingreso', key: 'entry_date', align: 'start' as const },
+    {
+      title: 'Fecha Resolución',
+      key: 'resolution_date',
+      align: 'start' as const,
+    },
+    { title: 'Días Tramitación', key: 'processing_days', align: 'end' as const },
+  ]
 </script>
+
+<style scoped></style>
