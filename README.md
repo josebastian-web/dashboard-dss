@@ -61,7 +61,7 @@ A continuación, se muestra un resumen de la estructura de archivos y directorio
 
 ```
 .
-├── public/                 # Archivos estáticos públicos (index.html, favicon, etc.)
+├── public/                 # Archivos estáticos públicos (favicon, etc.)
 ├── src/
 │   ├── assets/             # Imágenes, iconos, fuentes
 │   ├── components/         # Componentes reutilizables de Vue
