@@ -1,7 +1,7 @@
 <template>
-  <v-card class="pa-4" elevation="2">
+  <v-card class="pa-4" elevation="1">
     <v-card-title class="text-h5 text-center text-md-start">
-      Inversión por Año y Tipo de Proyecto
+      Promedio de Días de Tramitación por Año y Tipo
     </v-card-title>
     <v-card-text>
       <v-chart autoresize class="chart" :option="chartOptions" />
@@ -10,17 +10,15 @@
 </template>
 
 <script setup lang="ts">
-  import type { InvestmentData } from '@/types/chart'
+  import type { DiffTimeData } from '@/types/chart'
   import { computed } from 'vue'
-  import { formatCurrency } from '@/composables/useHelpers'
 
   const props = defineProps<{
-    chartData: InvestmentData
+    chartData: DiffTimeData
   }>()
 
   // Opciones
   const chartOptions = computed(() => {
-    // Retorna objeto vacío si no hay datos
     if (props.chartData.years.length === 0) {
       return {}
     }
@@ -33,13 +31,13 @@
           for (const item of params) {
             tooltipContent += `${item.marker} ${
               item.seriesName
-            }: <strong>${formatCurrency(item.value)}</strong><br/>`
+            }: <strong>${item.value.toLocaleString()} días</strong><br/>`
           }
           return tooltipContent
         },
       },
       legend: {
-        data: ['Inversión DIA', 'Inversión EIA'],
+        data: ['Promedio Días DIA', 'Promedio Días EIA'],
         bottom: 0,
         textStyle: {
           fontSize: 16,
@@ -59,29 +57,27 @@
       },
       yAxis: {
         type: 'value',
-        name: 'Inversión Total',
+        name: 'Días de Tramitación',
         axisLabel: {
-          formatter: (value: number) => formatCurrency(value),
+          formatter: '{value} días',
           fontSize: 14,
           fontFamily: 'Inter',
         },
       },
       series: [
         {
-          name: 'Inversión DIA',
+          name: 'Promedio Días DIA',
           type: 'bar',
-          stack: 'total',
-          data: props.chartData.diaInvestments,
+          data: props.chartData.diaAvgDays,
           emphasis: { focus: 'series' },
-          itemStyle: { color: '#FFB300' },
+          itemStyle: { color: '#E91E63' },
         },
         {
-          name: 'Inversión EIA',
+          name: 'Promedio Días EIA',
           type: 'bar',
-          stack: 'total',
-          data: props.chartData.eiaInvestments,
+          data: props.chartData.eiaAvgDays,
           emphasis: { focus: 'series' },
-          itemStyle: { color: '#00ACC1' },
+          itemStyle: { color: '#9C27B0' },
         },
       ],
       textStyle: {
@@ -93,4 +89,5 @@
 </script>
 
 <style scoped>
+
 </style>

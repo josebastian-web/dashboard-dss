@@ -1,40 +1,14 @@
 import type { Project } from '@/types/project'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { getDaysDiff } from '@/composables/useHelpers'
 import { useMainStore } from '@/stores/main'
 
 export const useDateDiffStore = defineStore('dateDiff', () => {
   const mainStore = useMainStore()
   const selectedRegion = ref<string>('Todas')
 
-  // FUNCIONES DE AYUDA
-
-  /**
-   * Calcula la diferencia en días entre dos fechas dadas como cadenas 'DD-MM-YYYY'.
-   * @param {string} date1Str - La primera fecha en formato 'DD-MM-YYYY'.
-   * @param {string} date2Str - La segunda fecha en formato 'DD-MM-YYYY'.
-   * @returns {number | null} La diferencia en días (redondeada hacia arriba) o null si las fechas son inválidas.
-   */
-  const getDaysDiff = (date1Str: string, date2Str: string): number | null => {
-    if (!date1Str || !date2Str) {
-      return null
-    }
-    const parseDateString = (ds: string) => {
-      const [d, m, y] = ds.split('-').map(Number)
-      return new Date(y, m - 1, d)
-    }
-    const date1 = parseDateString(date1Str)
-    const date2 = parseDateString(date2Str)
-    if (Number.isNaN(date1.getTime()) || Number.isNaN(date2.getTime())) {
-      return null
-    }
-    const diffTime = Math.abs(date2.getTime() - date1.getTime())
-    // Convierte milisegundos a días (redondeando hacia arriba).
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  }
-
   // GETTERS
-
   const filteredProjects = computed<Project[]>(() => {
     if (selectedRegion.value === 'Todas') {
       return mainStore.allProjects
@@ -47,7 +21,12 @@ export const useDateDiffStore = defineStore('dateDiff', () => {
    * por año de resolución y tipo de proyecto (DIA/EIA).
    */
   const chartData = computed(() => {
-    const dataByYearAndType: { [year: number]: { DIA: { totalDays: number, count: number }, EIA: { totalDays: number, count: number } } } = {}
+    const dataByYearAndType: {
+      [year: number]: {
+        DIA: { totalDays: number, count: number }
+        EIA: { totalDays: number, count: number }
+      }
+    } = {}
 
     for (const project of filteredProjects.value) {
       // Solo considera proyectos Aprobados que tienen fecha de ingreso y de resolución.

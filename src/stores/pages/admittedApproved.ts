@@ -26,8 +26,8 @@ export const useAdmittedApprovedStore = defineStore('admittedApproved', () => {
     for (const project of filteredProjects.value) {
       // Extrae el año de la fecha de ingreso del proyecto.
       const projectYear = new Date(project.fecha.split('-').reverse().join('-')).getFullYear()
+      // Inicializa contadores para un nuevo año.
       if (!dataByYear[projectYear]) {
-        // Inicializa contadores para un nuevo año.
         dataByYear[projectYear] = { entered: 0, approved: 0 }
       }
       // Incrementa el contador de proyectos ingresados.

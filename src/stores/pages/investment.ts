@@ -1,17 +1,12 @@
 import type { Project } from '@/types/project'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { parseInvestment } from '@/composables/useHelpers'
 import { useMainStore } from '@/stores/main'
 
 export const useInvestmentStore = defineStore('investment', () => {
   const mainStore = useMainStore()
   const selectedRegion = ref<string>('Todas')
-
-  // FUNCIONES DE AYUDA
-  const parseInvestment = (investmentStr: string): number => {
-    const cleanedStr = investmentStr.replace(/\./g, '').replace(/,/g, '.')
-    return Number.parseFloat(cleanedStr)
-  }
 
   // GETTERS
   const filteredProjects = computed<Project[]>(() => {

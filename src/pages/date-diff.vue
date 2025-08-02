@@ -5,7 +5,9 @@
     </h1>
 
     <v-card class="pa-4 mb-6" elevation="1">
-      <v-card-title class="text-h6"> Seleccionar Región </v-card-title>
+      <v-card-title class="text-h6">
+        Seleccionar Región
+      </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="4">
@@ -109,14 +111,7 @@
 
       <v-row class="mb-6">
         <v-col cols="12">
-          <v-card class="pa-4" elevation="1">
-            <v-card-title class="text-h5 text-center text-md-start">
-              Promedio de Días de Tramitación por Año y Tipo
-            </v-card-title>
-            <v-card-text>
-              <v-chart autoresize class="chart" :option="chartOptions" />
-            </v-card-text>
-          </v-card>
+          <DateDiffChart :chart-data="dateDiffStore.chartData" />
         </v-col>
       </v-row>
 
@@ -151,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted } from 'vue'
+  import { onMounted } from 'vue'
   import { useMainStore } from '@/stores/main'
   import { useDateDiffStore } from '@/stores/pages/dateDiff'
 
@@ -160,76 +155,6 @@
 
   onMounted(() => {
     mainStore.fetchAllProjects()
-  })
-
-  const chartOptions = computed(() => {
-    const chartData = dateDiffStore.chartData
-    if (chartData.years.length === 0) {
-      return {}
-    }
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        formatter: (params: any[]) => {
-          let tooltipContent = `<div style="font-weight: bold;">${params[0].name}</div>`
-          for (const item of params) {
-            tooltipContent += `${item.marker} ${
-              item.seriesName
-            }: <strong>${item.value.toLocaleString()} días</strong><br/>`
-          }
-          return tooltipContent
-        },
-      },
-      legend: {
-        data: ['Promedio Días DIA', 'Promedio Días EIA'],
-        bottom: 0,
-        textStyle: {
-          fontSize: 16,
-          fontFamily: 'Inter',
-        },
-      },
-      grid: { left: '3%', right: '4%', bottom: '20%', containLabel: true },
-      xAxis: {
-        type: 'category',
-        data: chartData.years,
-        axisLabel: {
-          interval: 0,
-          rotate: 30,
-          fontSize: 14,
-          fontFamily: 'Inter',
-        },
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Días de Tramitación',
-        axisLabel: {
-          formatter: '{value} días',
-          fontSize: 14,
-          fontFamily: 'Inter',
-        },
-      },
-      series: [
-        {
-          name: 'Promedio Días DIA',
-          type: 'bar',
-          data: chartData.diaAvgDays,
-          emphasis: { focus: 'series' },
-          itemStyle: { color: '#E91E63' },
-        },
-        {
-          name: 'Promedio Días EIA',
-          type: 'bar',
-          data: chartData.eiaAvgDays,
-          emphasis: { focus: 'series' },
-          itemStyle: { color: '#9C27B0' },
-        },
-      ],
-      textStyle: {
-        fontSize: 14,
-        fontFamily: 'Inter',
-      },
-    }
   })
 
   const tableHeaders = [

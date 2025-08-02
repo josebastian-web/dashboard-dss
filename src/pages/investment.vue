@@ -1,6 +1,8 @@
 <template>
   <v-container class="pa-4" fluid>
-    <h1 class="text-h4 mb-4 text-center text-md-start">Inversión por Año y Tipo de Proyecto</h1>
+    <h1 class="text-h4 mb-4 text-center text-md-start">
+      Inversión por Año y Tipo de Proyecto
+    </h1>
 
     <v-card class="pa-4 mb-6" elevation="1">
       <v-card-title class="text-h6">
@@ -107,14 +109,7 @@
 
       <v-row class="mb-6">
         <v-col cols="12">
-          <v-card class="pa-4" elevation="2">
-            <v-card-title class="text-h5 text-center text-md-start">
-              Inversión por Año y Tipo de Proyecto
-            </v-card-title>
-            <v-card-text>
-              <v-chart autoresize class="chart" :option="chartOptions" />
-            </v-card-text>
-          </v-card>
+          <InvestmentBarChart :chart-data="investmentStore.chartData" />
         </v-col>
       </v-row>
 
@@ -155,7 +150,8 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted } from 'vue'
+  import { onMounted } from 'vue'
+  import { formatCurrency } from '@/composables/useHelpers'
   import { useMainStore } from '@/stores/main'
   import { useInvestmentStore } from '@/stores/pages/investment'
 
@@ -164,91 +160,6 @@
 
   onMounted(() => {
     mainStore.fetchAllProjects()
-  })
-
-  // Función de ayuda para formatear moneda
-  const formatCurrency = (value: number): string => {
-    // Usar formato de Peso Chileno (CLP), ajustar según sea necesario
-    return new Intl.NumberFormat('es-CL', {
-      style: 'currency',
-      currency: 'CLP',
-      // Sin decimales para números enteros
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
-  const chartOptions = computed(() => {
-    const chartData = investmentStore.chartData
-    // Retorna objeto vacío si no hay datos
-    if (chartData.years.length === 0) {
-      return {}
-    }
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        formatter: (params: any[]) => {
-          let tooltipContent = `<div style="font-weight: bold;">${params[0].name}</div>`
-          for (const item of params) {
-            tooltipContent += `${item.marker} ${
-              item.seriesName
-            }: <strong>${formatCurrency(item.value)}</strong><br/>`
-          }
-          return tooltipContent
-        },
-      },
-      legend: {
-        data: ['Inversión DIA', 'Inversión EIA'],
-        bottom: 0,
-        textStyle: {
-          fontSize: 16,
-          fontFamily: 'Inter',
-        },
-      },
-      grid: { left: '3%', right: '4%', bottom: '20%', containLabel: true },
-      xAxis: {
-        type: 'category',
-        data: chartData.years,
-        axisLabel: {
-          interval: 0,
-          rotate: 30,
-          fontSize: 14,
-          fontFamily: 'Inter',
-        },
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Inversión Total',
-        axisLabel: {
-          formatter: (value: number) => formatCurrency(value),
-          fontSize: 14,
-          fontFamily: 'Inter',
-        },
-      },
-      series: [
-        {
-          name: 'Inversión DIA',
-          type: 'bar',
-          stack: 'total',
-          data: chartData.diaInvestments,
-          emphasis: { focus: 'series' },
-          itemStyle: { color: '#FFB300' },
-        },
-        {
-          name: 'Inversión EIA',
-          type: 'bar',
-          stack: 'total',
-          data: chartData.eiaInvestments,
-          emphasis: { focus: 'series' },
-          itemStyle: { color: '#00ACC1' },
-        },
-      ],
-      textStyle: {
-        fontSize: 14,
-        fontFamily: 'Inter',
-      },
-    }
   })
 
   const tableHeaders = [
